@@ -81,17 +81,24 @@ void surface_dither(SDL_Surface* surface)
     Uint32* pixels = surface->pixels;
     int width = surface->w;
     int height = surface->h;
+    //SDL_PixelFormat* format = surface->format;
     int locked = SDL_LockSurface(surface);
     if (locked != 0)
 	    errx(EXIT_FAILURE, "%s", SDL_GetError());
+    //Uint32 black = SDL_MapRGB(format, 0, 0, 0);
+    //Uint32 white = SDL_MapRGB(format, 255, 255, 255);
     for(int j = 1; j < height - 1; j++){
 	 for(int i = 0; i < width - 1; i++){
-	 	 Uint32 quant_pixel = (pixels[j * width + i] > 127) ? 255 : 0;
+		 //Uint8 r, g, b;
+		 //SDL_GetRGB(pixels[j * width + i], format, &r, &g, &b);
+	       	 //Uint32 quant_pixel = r > 127 ? white : black;
+		 Uint32 quant_pixel = pixels[j * width + i] > 127 ? 255 : 0;
 		 Uint32 quant_error = pixels[j * width + i] - quant_pixel;
-		 pixels[(j + 1) * width + i] +=  quant_error * 7 / 16;
-		 pixels[(j - 1) * width + (i + 1)] += quant_error * 3 / 16;
-                 pixels[j * width + (i + 1)] += quant_error * 5 / 16;
-         	 pixels[(j + 1) * width + (i + 1)] += quant_error * 1 / 16;
+		 //pixels[j * width +i] = quant_pixel;
+		 pixels[(j + 1) * width + i] =  pixels[(j + 1) * width + i] + quant_error * 7/16;
+		 pixels[(j - 1) * width + (i + 1)] = pixels[(j-1) * width + (i+1)] + quant_error*3/16;
+                 pixels[j * width + (i + 1)] = pixels[j * width + (i + 1)] +quant_error * 5/16;
+         	 pixels[(j + 1) * width + (i + 1)] = pixels[(j+1) * width + (i+1)] + quant_error*1/16;
 	 	}
 	 }
 
@@ -123,12 +130,15 @@ int main(int argc, char** argv)
     SDL_Texture* gray_texture = SDL_CreateTextureFromSurface(renderer, surface);
     surface_dither(surface);
     SDL_Texture* dithered_texture = SDL_CreateTextureFromSurface(renderer, surface);
+    surface_to_grayscale(surface);//
+    SDL_Texture* double_gray_texture = SDL_CreateTextureFromSurface(renderer, surface);//
     SDL_FreeSurface(surface);
-    event_loop(renderer, dithered_texture); //texture, gray_texture, dithered_texture);
+    event_loop(renderer, double_gray_texture); //texture, gray_texture, dithered_texture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyTexture(texture);
     SDL_DestroyTexture(gray_texture);
     SDL_DestroyTexture(dithered_texture);
+    SDL_DestroyTexture(double_gray_texture);//
     SDL_DestroyWindow(window);
     SDL_Quit();
 
