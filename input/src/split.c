@@ -267,6 +267,7 @@ int main(int argc, char *argv[])
     //IMG_SavePNG(frames[0], "test.png");
     //SDL_Surface *image = IMG_Load(argv[1]);
     int n = atoi(argv[2]);
+    int d = atoi(argv[3]);
 
     char *asciis = "  .:-=+*#%@";
 
@@ -301,7 +302,7 @@ int main(int argc, char *argv[])
             //clear screen
             printf("\033[2J\033[1;1H");
             printf("%s", res[i]);
-            SDL_Delay(100);
+            SDL_Delay(d);
         }
     }
 
