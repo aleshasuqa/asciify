@@ -157,12 +157,12 @@ SDL_Surface** get_frames(char *path, int *n) {
     if (*n < 0)
         perror("scandir");
     else {
-        for (int i = 0; i < *n; i++) {
-            if (namelist[i]->d_name[0] == '.')
-                k++;
-        }
         frames = malloc((*n-k) * sizeof(SDL_Surface*));
-        for (int i = k; i < *n; ++i) {
+        for (int i = 0; i < *n; ++i) {
+            if (namelist[i]->d_name[0] == '.') {
+                k++;
+                continue;
+            }
             printf("%s\n", namelist[i]->d_name);
             char *buf = malloc(100);
             strcpy(buf, path);
@@ -258,66 +258,93 @@ char* asciify(SDL_Surface *image, int n, int m, char *asciis) {
 }
 
 
+
+
 // test
 int main(int argc, char *argv[])
 {
-    int l = 0;
-    SDL_Surface** frames = get_frames(argv[1], &l);
-    printf("l: %d\n", l);
-    //IMG_SavePNG(frames[0], "test.png");
-    //SDL_Surface *image = IMG_Load(argv[1]);
-    int n = atoi(argv[2]);
-    int d = atoi(argv[3]);
-
-    char *asciis = "  .:-=+*#%@";
-
-    //char *res = asciify(image, n, n, asciis);
-    //printf("%s", res);
-
-    /*frames[0] = IMG_Load("../img/nya/0.png");
-    frames[1] = IMG_Load("../img/nya/1.png");
-    frames[2] = IMG_Load("../img/nya/2.png");
-    frames[3] = IMG_Load("../img/nya/3.png");
-    frames[4] = IMG_Load("../img/nya/4.png");
-    frames[5] = IMG_Load("../img/nya/5.png");
-    frames[6] = IMG_Load("../img/nya/6.png");
-    frames[7] = IMG_Load("../img/nya/7.png");
-    frames[8] = IMG_Load("../img/nya/8.png");
-    frames[9] = IMG_Load("../img/nya/9.png");
-    frames[10] = IMG_Load("../img/nya/10.png");
-    frames[11] = IMG_Load("../img/nya/11.png");*/
-    // print frame sizes
-
-
-    char **res = malloc(l*sizeof(char*));
-    for (int i = 0; i < l; i++) {
-        //printf("i: %i\n", i);
-        //IMG_SavePNG(frames[i], "test.png");
-        res[i] = asciify(frames[i], n, n, asciis);
-        //printf("i: %i len: %i must: %i\n", i, strlen(res[i]), frames[i]->w/n*frames[i]->h/n+frames[i]->h);
+    if (argc == 3) {
+        SDL_Surface *image = IMG_Load(argv[1]);
+        int n = atoi(argv[2]);
+        char *asciis = "  .:-=+*#%@";
+        char *res = asciify(image, n, n, asciis);
+        printf("%s", res);
+        SDL_FreeSurface(image);
+        free(res);
+        return 0;
     }
 
-    for (int _ = 0; _ < 10; ++_) {
-        for (int i = 0; i < l; ++i) {
-            //clear screen
-            printf("\033[2J\033[1;1H");
-            printf("%s", res[i]);
-            SDL_Delay(d);
+    if (argc == 4)
+    {
+        int l = 0;
+        SDL_Surface** frames = get_frames(argv[1], &l);
+        //IMG_SavePNG(frames[0], "test.png");
+        //SDL_Surface *image = IMG_Load(argv[1]);
+
+        int n = atoi(argv[2]);
+        int d = atoi(argv[3]);
+
+        char *asciis = "  .:-=+*#%@";
+
+
+        char **res = malloc(l*sizeof(char*));
+        for (int i = 0; i < l; i++) {
+            //printf("i: %i\n", i);
+            //IMG_SavePNG(frames[i], "test.png");
+            res[i] = asciify(frames[i], n, n, asciis);
+            //printf("i: %i len: %i must: %i\n", i, strlen(res[i]), frames[i]->w/n*frames[i]->h/n+frames[i]->h);
         }
+
+        for (int _ = 0; _ < 10; ++_) {
+            for (int i = 0; i < l; ++i) {
+                //clear screen
+                printf("\033[2J\033[1;1H");
+                printf("%s", res[i]);
+                SDL_Delay(d);
+            }
+        }
+
+        // clear screen
+
+        // free memory
+
+
+        // free memory
+        for (int i = 0; i < l; ++i) {
+            free(res[i]);
+        }
+        free(res);
+        for (int i = 0; i < l; i++) {
+            SDL_FreeSurface(frames[i]);
+        }
+        return 0;
     }
 
-    // clear screen
+    if (argc == 5) {
+        int l = 0;
+        SDL_Surface** frames = get_frames(argv[1], &l);
+        //IMG_SavePNG(frames[0], "test.png");
+        //SDL_Surface *image = IMG_Load(argv[1]);
 
-    // free memory
+        int n = atoi(argv[2]);
+        int d = atoi(argv[3]);
 
+        char *asciis = "  .:-=+*#%@";
 
-    // free memory
-    for (int i = 0; i < 12; ++i) {
-        free(res[i]);
+        for (int _ = 0; _ < 10; ++_) {
+            for (int i = 0; i < l; ++i) {
+                //clear screen
+                printf("\033[2J\033[1;1H");
+                char *res = asciify(frames[i], n, n, asciis);
+                printf("%s", res);
+                free(res);
+                SDL_Delay(d);
+            }
+        }
+        for (int i = 0; i < l; i++) {
+            SDL_FreeSurface(frames[i]);
+        }
+        return 0;
     }
-    free(res);
-    for (int i = 0; i < 12; i++) {
-        SDL_FreeSurface(frames[i]);
-    }
-    return 0;
+
 }
