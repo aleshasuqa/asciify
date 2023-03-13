@@ -94,7 +94,6 @@ double ssim(SDL_Surface* image1, SDL_Surface* image2) {
     double cov = 0;
     for (int i = 0; i < image1->h; i++) {
         for (int j = 0; j < image1->w; j++) {
-            //printf("i = %d, j = %d \n", i, j);
             Uint32 pixel1 = get_pixel(image1, j, i);
             Uint32 pixel2 = get_pixel(image2, j, i);
 
@@ -102,8 +101,6 @@ double ssim(SDL_Surface* image1, SDL_Surface* image2) {
             Uint8 r2, g2, b2;
             SDL_GetRGB(pixel1, image1->format, &r1, &g1, &b1);
             SDL_GetRGB(pixel2, image2->format, &r2, &g2, &b2);
-            //double gray1 = 0.2126 * r1 + 0.7152 * g1 + 0.0722 * b1;
-            //double gray2 = 0.2126 * r2 + 0.7152 * g2 + 0.0722 * b2;
             double gray1 = (r1 + g1 + b1) / 3;
             double gray2 = (r2 + g2 + b2) / 3;
             mean1 += gray1;
@@ -118,9 +115,6 @@ double ssim(SDL_Surface* image1, SDL_Surface* image2) {
     var1 /= image1->h * image1->w - 1;
     var2 /= image1->h * image1->w - 1;
     cov /= image1->h * image1->w - 1;
-    //var1 -= mean1 * mean1;
-    //var2 -= mean2 * mean2;
-    //cov -= mean1 * mean2;
     // calculate luminance
     double luminance = (2 * mean1 * mean2 + C1) / (mean1 * mean1 + mean2 * mean2 + C1);
     // calculate contrast
