@@ -82,7 +82,6 @@ int get_average_brightness(SDL_Surface *cell) {
             sum += (r+g+b)/3;
         }
     }
-    //printf("brightness: %d\n", sum/(w*h));
     return sum/(w*h);
 }
 
@@ -234,7 +233,6 @@ char* asciify(SDL_Surface *image, int n, int m, char *asciis) {
     Uint32 *pixels = (Uint32*)cell->pixels;
     for (int j = 0; j < h; j+=m) {
         for (int i = 0; i < w; i+=n) {
-            //printf("i: %d, j: %d\n", i, j);
             SDL_Rect rect;
             rect.x = i;
             rect.y = j;
@@ -244,15 +242,12 @@ char* asciify(SDL_Surface *image, int n, int m, char *asciis) {
             res[k] = asciis[get_char(get_average_brightness(cell), asciis)];
             if (res[k] == '\0')
                 res[k] = asciis[strlen(asciis)-1];
-            //printf("%c", res[k]);
             k++;
         }
         res[k++] = '\n';
         printf("\n");
     }
     res[k] = '\0';
-    //printf("length: %d k: %d fin: %i\n", strlen(res), k, res[strlen(res)]);
-    // free memory
     SDL_FreeSurface(cell);
     return res;
 }
