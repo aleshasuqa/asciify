@@ -123,7 +123,7 @@ SDL_Surface** create_chars(char *asciis) {
                     continue;
                 else
                     name = dir->d_name[0];
-                asciis[i] = name;
+                name = asciis[i];
                 char *np = malloc(100);
                 strcat(np, path);
                 strcat(np, "/");
@@ -137,7 +137,7 @@ SDL_Surface** create_chars(char *asciis) {
                 glyph->format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888);
                 chars[i] = glyph;
                 i++;
-                asciis[i] = '\0';
+                //asciis[i] = '\0';
                 //printf("%c\n", name);
                 free(np);
             }
@@ -208,7 +208,7 @@ char* asciify1(SDL_Surface *image, SDL_Surface** chars, char *asciis) {
             int index = 0;
             for (int l = 0; l < strlen(asciis); l++) {
                 printf("l: %d\n", l);
-                double sim = ssim(cell, chars[l]);
+                double sim = get_ssim(cell, chars[l]);
                 if (sim > max) {
                     max = sim;
                     index = l;
@@ -258,6 +258,20 @@ char* asciify(SDL_Surface *image, int n, int m, char *asciis) {
 // test
 int main(int argc, char *argv[])
 {
+    if (argc == 1)
+    {
+        printf("Usage: 1) Convert a photo: png + size of tile\n2) Convert frames: frames folder + size of tile + time between frames\n3) SSIM: img1 + img2 + ss\n4) Convert with ssim: png\n5) Convert frames in real time: frames folder + size of tile + time between frames + rr\n");
+    }
+    if (argc == 2) {
+        SDL_Surface *image = IMG_Load(argv[1]);
+        char* asciis = "ABCDEFGHIJKLMNOPQRSTUVWXYZa&ˆ˜*@b`|{}[]c:,d$e8=!f54g£>h-ijkl<mn9#o1p()%.+q?\"\'rs;76/ t32u";
+        SDL_Surface** chars = create_chars(asciis);
+        char *res = asciify1(image, chars, asciis);
+        printf("%s", res);
+        SDL_FreeSurface(image);
+        free(res);
+        return 0;
+    }
     if (argc == 3) {
         SDL_Surface *image = IMG_Load(argv[1]);
         int n = atoi(argv[2]);
@@ -271,48 +285,76 @@ int main(int argc, char *argv[])
 
     if (argc == 4)
     {
-        int l = 0;
-        SDL_Surface** frames = get_frames(argv[1], &l);
-        //IMG_SavePNG(frames[0], "test.png");
-        //SDL_Surface *image = IMG_Load(argv[1]);
-
-        int n = atoi(argv[2]);
-        int d = atoi(argv[3]);
-
-        char *asciis = "  .:-=+*#%@";
-
-
-        char **res = malloc(l*sizeof(char*));
-        for (int i = 0; i < l; i++) {
-            //printf("i: %i\n", i);
-            //IMG_SavePNG(frames[i], "test.png");
-            res[i] = asciify(frames[i], n, n, asciis);
-            //printf("i: %i len: %i must: %i\n", i, strlen(res[i]), frames[i]->w/n*frames[i]->h/n+frames[i]->h);
-        }
-
-        for (int _ = 0; _ < 10; ++_) {
-            for (int i = 0; i < l; ++i) {
-                //clear screen
-                printf("\033[2J\033[1;1H");
-                printf("%s", res[i]);
-                SDL_Delay(d);
+        if (strcmp(argv[3], "ss") == 0)
+        {
+            printf("ssim\n");
+            // compute ssim index of two images
+            SDL_Surface *image1 = IMG_Load(argv[1]);
+            SDL_Surface *image2 = IMG_Load(argv[2]);
+            double sim = 0;
+            for (int j = 0; j < image1->h; j+=8) {
+                for (int i = 0; i < image1->w; i+=8) {
+                    SDL_Rect rect = {i, j, 8, 8};
+                    SDL_Surface *cell1 = SDL_CreateRGBSurface(0, 8, 8, 32, 0, 0, 0, 0);
+                    SDL_Surface *cell2 = SDL_CreateRGBSurface(0, 8, 8, 32, 0, 0, 0, 0);
+                    SDL_BlitSurface(image1, &rect, cell1, NULL);
+                    SDL_BlitSurface(image2, &rect, cell2, NULL);
+                    sim += get_ssim(cell1, cell2);
+                    SDL_FreeSurface(cell1);
+                    SDL_FreeSurface(cell2);
+                }
             }
+            sim /= (image1->w/8)*(image1->h/8);
+            //printf("ssim: %f\n", sim);
+            SDL_FreeSurface(image1);
+            SDL_FreeSurface(image2);
+            return 0;
         }
+        else
+        {
+            int l = 0;
+            SDL_Surface** frames = get_frames(argv[1], &l);
+            //IMG_SavePNG(frames[0], "test.png");
+            //SDL_Surface *image = IMG_Load(argv[1]);
 
-        // clear screen
+            int n = atoi(argv[2]);
+            int d = atoi(argv[3]);
 
-        // free memory
+            char *asciis = "  .:-=+*#%@";
 
 
-        // free memory
-        for (int i = 0; i < l; ++i) {
-            free(res[i]);
+            char **res = malloc(l*sizeof(char*));
+            for (int i = 0; i < l; i++) {
+                //printf("i: %i\n", i);
+                //IMG_SavePNG(frames[i], "test.png");
+                res[i] = asciify(frames[i], n, n, asciis);
+                //printf("i: %i len: %i must: %i\n", i, strlen(res[i]), frames[i]->w/n*frames[i]->h/n+frames[i]->h);
+            }
+
+            for (int _ = 0; _ < 10; ++_) {
+                for (int i = 0; i < l; ++i) {
+                    //clear screen
+                    printf("\033[2J\033[1;1H");
+                    printf("%s", res[i]);
+                    SDL_Delay(d);
+                }
+            }
+
+            // clear screen
+
+            // free memory
+
+
+            // free memory
+            for (int i = 0; i < l; ++i) {
+                free(res[i]);
+            }
+            free(res);
+            for (int i = 0; i < l; i++) {
+                SDL_FreeSurface(frames[i]);
+            }
+            return 0;
         }
-        free(res);
-        for (int i = 0; i < l; i++) {
-            SDL_FreeSurface(frames[i]);
-        }
-        return 0;
     }
 
     if (argc == 5) {
