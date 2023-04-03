@@ -76,32 +76,34 @@ video_info get_video_info(char *filename)
 
 void frame2ascii(unsigned char frame[H][W][3], char *asciis, int len, int tile_size)
 {
-    //char res[H/tile_size * (W/tile_size+1)];
     int i, j, x, y, sum = 0;
-    for (y=0 ; y<H ; y += tile_size)
+    char ascii_char;
+
+    for (y = 0; y < H; y += tile_size)
     {
-        for (x=0 ; x<W ; x+=tile_size)
+        for (x = 0; x < W; x += tile_size)
         {
-            for (j = 0; j<tile_size; ++j) for (i = 0; i<tile_size; ++i)
+            sum = 0;
+
+            for (j = 0; j < tile_size; ++j)
             {
-                if (y+j < H && x+i < W)
+                for (i = 0; i < tile_size; ++i)
                 {
-                    sum += (frame[y+j][x+i][0] + frame[y+j][x+i][1] + frame[y+j][x+i][2])/3;
+                    if (y + j < H && x + i < W)
+                    {
+                        sum += (frame[y + j][x + i][0] + frame[y + j][x + i][1] + frame[y + j][x + i][2]);
+                    }
                 }
             }
-            //printf("\033[0;31m");
-            sum /= tile_size*tile_size;
-            printf("%c", asciis[sum*len/255]);
-            //res[z] = asciis[sum*len/255];
-            //z++;
-            //printf("\033[0m);
+
+            sum /= (3 * tile_size * tile_size);
+            ascii_char = asciis[sum * len / 255];
+
+            putchar(ascii_char);
         }
-        //res[z] = '\n';
-        printf("\n");
-        //z++;
+
+        putchar('\n');
     }
-    //res[z] = '\0';
-    //return res;
 }
 
 void read_video(char *filename, char *asciis, int len, int tile_size, int fps)
