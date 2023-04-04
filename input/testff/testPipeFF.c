@@ -195,11 +195,11 @@ int main(int argc, char *argv[])
     }
     #elif _WIN32
         // windows specific code
-    #elif __LINUX__
+    #elif __unix__
     {
         if (strcmp(argv[1], "web_cam") == 0)
         {
-            snprintf(cmd, sizeof(cmd), "ffmpeg -i dev/video0 -f image2pipe -pix_fmt rgb24 -vcodec rawvideo -");
+            snprintf(cmd, sizeof(cmd), "ffmpeg -i /dev/video0 -f image2pipe -pix_fmt rgb24 -vcodec rawvideo -");
             //printf("%s\n\n\n", cmd);
             H = 720;
             W = 1280;
