@@ -1,0 +1,25 @@
+.background {
+    background-color: #363636;
+    background-image: none;
+    color: #ffffff;
+}
+
+
+
+button {
+    background-image: none;
+    background-color: #404040;
+    color: #ffffff;
+    border-radius: 0px;
+    border: 0px;
+    padding: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 10px 10px 10px 10px #363636;
+}
+
+button:hover {
+    background-color: #505050;
+    font-size: 16px;
+}
+
