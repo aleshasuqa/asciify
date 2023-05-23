@@ -18,7 +18,7 @@
           <object class="GtkLabel">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="label" translatable="yes">hello</property>
+            <property name="label" translatable="yes">ASCII-fy!</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -70,7 +70,7 @@
             <property name="homogeneous">True</property>
             <child>
               <object class="GtkButton" id="use_live_video_button">
-                <property name="label" translatable="yes">Web</property>
+                <property name="label" translatable="yes">WebCam</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
@@ -83,7 +83,7 @@
             </child>
             <child>
               <object class="GtkButton" id="use_phone_video_button">
-                <property name="label" translatable="yes">phone</property>
+                <property name="label" translatable="yes">PhoneCam (Apple only)</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
@@ -103,12 +103,12 @@
         </child>
         <child>
           <object class="GtkLinkButton">
-            <property name="label" translatable="yes">button</property>
+            <property name="label" translatable="yes">check out our website</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
             <property name="relief">none</property>
-            <property name="uri">http://glade.gnome.org</property>
+            <property name="uri">https://t0pl.github.io/asciify/</property>
           </object>
           <packing>
             <property name="expand">False</property>

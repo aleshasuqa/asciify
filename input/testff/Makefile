@@ -5,7 +5,7 @@ CC = gcc
 CPPFLAGS =
 CFLAGS = -Wall -Wextra -O3 `pkg-config --cflags sdl2` `pkg-config --cflags SDL2_ttf` `pkg-config --cflags --libs gtk+-3.0`
 LDFLAGS =
-LDLIBS = `pkg-config --libs sdl2` `pkg-config --libs SDL2_ttf` -lm
+LDLIBS = `pkg-config --libs sdl2` `pkg-config --libs SDL2_ttf` `pkg-config --cflags SDL2_ttf` `pkg-config --cflags --libs gtk+-3.0` -lm
 
 all: testPipeFF
 
